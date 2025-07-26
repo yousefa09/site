@@ -280,35 +280,39 @@ function preloadContent() {
 // Initialize performance optimizations
 requestIdleCallback(preloadContent);
 
-// Create dynamic particle system
+// Create liquid glass particle system
 function createParticleSystem() {
     const particleContainer = document.querySelector('.floating-particles');
     
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 8; i++) {
         const particle = document.createElement('div');
-        particle.className = 'dynamic-particle';
+        particle.className = 'liquid-particle';
+        const size = Math.random() * 20 + 10;
         particle.style.cssText = `
             position: absolute;
-            width: ${Math.random() * 4 + 2}px;
-            height: ${Math.random() * 4 + 2}px;
-            background: linear-gradient(45deg, #6750A4, #00ffff, #ff1493);
+            width: ${size}px;
+            height: ${size}px;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1)),
+                linear-gradient(135deg, rgba(120, 119, 198, 0.6), rgba(255, 69, 58, 0.6));
             border-radius: 50%;
             left: ${Math.random() * 100}%;
             top: ${Math.random() * 100}%;
-            animation: particleFloat ${Math.random() * 10 + 10}s linear infinite;
-            animation-delay: ${Math.random() * 5}s;
-            opacity: ${Math.random() * 0.8 + 0.2};
-            box-shadow: 0 0 10px currentColor;
+            backdrop-filter: blur(10px);
+            animation: liquidParticleFloat ${Math.random() * 15 + 15}s ease-in-out infinite;
+            animation-delay: ${Math.random() * 8}s;
+            opacity: ${Math.random() * 0.6 + 0.3};
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
         `;
         particleContainer.appendChild(particle);
     }
 }
 
-// Add matrix rain effect (subtle)
-function createMatrixRain() {
-    const canvas = document.createElement('canvas');
-    canvas.id = 'matrix-canvas';
-    canvas.style.cssText = `
+// Add liquid gradient waves effect
+function createLiquidWaves() {
+    const wavesContainer = document.createElement('div');
+    wavesContainer.id = 'liquid-waves';
+    wavesContainer.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
@@ -316,94 +320,134 @@ function createMatrixRain() {
         height: 100%;
         pointer-events: none;
         z-index: 0;
-        opacity: 0.1;
+        opacity: 0.3;
+        overflow: hidden;
     `;
-    document.body.appendChild(canvas);
     
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
-    const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops = [];
-    
-    for (let x = 0; x < columns; x++) {
-        drops[x] = 1;
+    for (let i = 0; i < 3; i++) {
+        const wave = document.createElement('div');
+        wave.className = 'liquid-wave';
+        wave.style.cssText = `
+            position: absolute;
+            top: ${Math.random() * 100}%;
+            left: -100%;
+            width: 300%;
+            height: 100px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(120, 119, 198, 0.4),
+                rgba(255, 69, 58, 0.4),
+                rgba(48, 209, 88, 0.4),
+                transparent
+            );
+            border-radius: 50px;
+            filter: blur(20px);
+            animation: liquidWaveFlow ${15 + i * 5}s ease-in-out infinite;
+            animation-delay: ${i * 5}s;
+            transform: rotate(${Math.random() * 30 - 15}deg);
+        `;
+        wavesContainer.appendChild(wave);
     }
     
-    function drawMatrix() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = '#6750A4';
-        ctx.font = fontSize + 'px monospace';
-        
-        for (let i = 0; i < drops.length; i++) {
-            const text = characters.charAt(Math.floor(Math.random() * characters.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-            }
-            drops[i]++;
-        }
-    }
-    
-    setInterval(drawMatrix, 100);
+    document.body.appendChild(wavesContainer);
 }
 
-// Enhanced section transitions
+// Enhanced liquid glass transitions
 function enhanceTransitions() {
     const style = document.createElement('style');
     style.textContent += `
-        @keyframes particleFloat {
+        @keyframes liquidParticleFloat {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                border-radius: 50%;
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(50px, -30px) rotate(90deg) scale(1.2);
+                border-radius: 60% 40% 30% 70%;
+                opacity: 0.6;
+            }
+            50% {
+                transform: translate(-20px, 40px) rotate(180deg) scale(0.8);
+                border-radius: 30% 70% 60% 40%;
+                opacity: 0.8;
+            }
+            75% {
+                transform: translate(-40px, -20px) rotate(270deg) scale(1.1);
+                border-radius: 70% 30% 40% 60%;
+                opacity: 0.4;
+            }
+        }
+        
+        @keyframes liquidWaveFlow {
             0% {
-                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                transform: translateX(-100%) rotate(0deg) scaleY(1);
                 opacity: 0;
             }
-            10% {
+            20% {
                 opacity: 1;
+                transform: translateX(-50%) rotate(5deg) scaleY(1.2);
             }
-            90% {
+            50% {
+                transform: translateX(0%) rotate(-3deg) scaleY(0.8);
+                opacity: 0.8;
+            }
+            80% {
                 opacity: 1;
+                transform: translateX(50%) rotate(3deg) scaleY(1.1);
             }
             100% {
-                transform: translateY(-100vh) translateX(${Math.random() * 200 - 100}px) rotate(360deg);
+                transform: translateX(100%) rotate(0deg) scaleY(1);
                 opacity: 0;
             }
         }
         
         .content-section.active {
-            animation: sectionSlide 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: liquidSectionSlide 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
-        @keyframes sectionSlide {
+        @keyframes liquidSectionSlide {
             from {
                 opacity: 0;
-                transform: translateX(50px) rotateY(10deg);
-                filter: blur(10px);
+                transform: translateY(30px) scale(0.95);
+                filter: blur(20px);
+                backdrop-filter: blur(0px);
             }
             to {
                 opacity: 1;
-                transform: translateX(0) rotateY(0deg);
+                transform: translateY(0) scale(1);
                 filter: blur(0px);
+                backdrop-filter: blur(40px);
             }
         }
         
         .avatar {
-            animation: avatarGlow 3s ease-in-out infinite alternate;
+            animation: liquidAvatarMorph 4s ease-in-out infinite;
         }
         
-        @keyframes avatarGlow {
-            from {
-                box-shadow: 0 0 20px rgba(103, 80, 164, 0.5);
+        @keyframes liquidAvatarMorph {
+            0%, 100% {
+                border-radius: 50%;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                    0 8px 25px rgba(0, 0, 0, 0.2);
                 transform: scale(1);
             }
-            to {
-                box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+            25% {
+                border-radius: 60% 40% 50% 70%;
                 transform: scale(1.05);
+            }
+            50% {
+                border-radius: 40% 60% 70% 30%;
+                box-shadow: 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                    0 12px 35px rgba(0, 0, 0, 0.3);
+                transform: scale(0.98);
+            }
+            75% {
+                border-radius: 70% 30% 40% 60%;
+                transform: scale(1.02);
             }
         }
     `;
@@ -412,39 +456,54 @@ function enhanceTransitions() {
 
 // Initialize all enhancements
 enhanceTransitions();
-createMatrixRain();
+createLiquidWaves();
 
-// Mouse trail effect
+// Liquid glass mouse trail effect
+let lastTrailTime = 0;
 document.addEventListener('mousemove', function(e) {
+    const now = Date.now();
+    if (now - lastTrailTime < 50) return; // Throttle for performance
+    lastTrailTime = now;
+    
     const trail = document.createElement('div');
-    trail.className = 'mouse-trail';
+    trail.className = 'liquid-mouse-trail';
     trail.style.cssText = `
         position: fixed;
-        width: 10px;
-        height: 10px;
-        background: radial-gradient(circle, rgba(103, 80, 164, 0.8), transparent);
+        width: 12px;
+        height: 12px;
+        background: 
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1)),
+            linear-gradient(135deg, rgba(120, 119, 198, 0.6), rgba(255, 69, 58, 0.6));
         border-radius: 50%;
         pointer-events: none;
-        left: ${e.clientX - 5}px;
-        top: ${e.clientY - 5}px;
+        left: ${e.clientX - 6}px;
+        top: ${e.clientY - 6}px;
         z-index: 9999;
-        animation: trailFade 1s ease-out forwards;
+        backdrop-filter: blur(8px);
+        animation: liquidTrailFade 1.2s ease-out forwards;
     `;
     document.body.appendChild(trail);
     
-    setTimeout(() => trail.remove(), 1000);
+    setTimeout(() => trail.remove(), 1200);
 });
 
 const trailStyle = document.createElement('style');
 trailStyle.textContent = `
-    @keyframes trailFade {
-        from {
-            opacity: 1;
-            transform: scale(1);
+    @keyframes liquidTrailFade {
+        0% {
+            opacity: 0.8;
+            transform: scale(1) rotate(0deg);
+            border-radius: 50%;
         }
-        to {
+        50% {
+            opacity: 0.4;
+            transform: scale(1.5) rotate(180deg);
+            border-radius: 60% 40% 70% 30%;
+        }
+        100% {
             opacity: 0;
-            transform: scale(0);
+            transform: scale(0.2) rotate(360deg);
+            border-radius: 30% 70% 40% 60%;
         }
     }
 `;
