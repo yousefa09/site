@@ -1,6 +1,9 @@
 // Material 3 Portfolio - JavaScript Functionality
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add particle system
+    createParticleSystem();
+    
     // Navigation functionality
     const navButtons = document.querySelectorAll('.nav-btn');
     const contentSections = document.querySelectorAll('.content-section');
@@ -277,6 +280,177 @@ function preloadContent() {
 // Initialize performance optimizations
 requestIdleCallback(preloadContent);
 
-console.log('Material 3 Portfolio loaded successfully! 🚀');
-console.log('Navigation: Use number keys 1-4 or click the buttons');
-console.log('Accessibility: Tab navigation and focus indicators enabled');
+// Create dynamic particle system
+function createParticleSystem() {
+    const particleContainer = document.querySelector('.floating-particles');
+    
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'dynamic-particle';
+        particle.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 4 + 2}px;
+            height: ${Math.random() * 4 + 2}px;
+            background: linear-gradient(45deg, #6750A4, #00ffff, #ff1493);
+            border-radius: 50%;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation: particleFloat ${Math.random() * 10 + 10}s linear infinite;
+            animation-delay: ${Math.random() * 5}s;
+            opacity: ${Math.random() * 0.8 + 0.2};
+            box-shadow: 0 0 10px currentColor;
+        `;
+        particleContainer.appendChild(particle);
+    }
+}
+
+// Add matrix rain effect (subtle)
+function createMatrixRain() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'matrix-canvas';
+    canvas.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.1;
+    `;
+    document.body.appendChild(canvas);
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+    
+    for (let x = 0; x < columns; x++) {
+        drops[x] = 1;
+    }
+    
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#6750A4';
+        ctx.font = fontSize + 'px monospace';
+        
+        for (let i = 0; i < drops.length; i++) {
+            const text = characters.charAt(Math.floor(Math.random() * characters.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    
+    setInterval(drawMatrix, 100);
+}
+
+// Enhanced section transitions
+function enhanceTransitions() {
+    const style = document.createElement('style');
+    style.textContent += `
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(${Math.random() * 200 - 100}px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .content-section.active {
+            animation: sectionSlide 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes sectionSlide {
+            from {
+                opacity: 0;
+                transform: translateX(50px) rotateY(10deg);
+                filter: blur(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotateY(0deg);
+                filter: blur(0px);
+            }
+        }
+        
+        .avatar {
+            animation: avatarGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes avatarGlow {
+            from {
+                box-shadow: 0 0 20px rgba(103, 80, 164, 0.5);
+                transform: scale(1);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+                transform: scale(1.05);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize all enhancements
+enhanceTransitions();
+createMatrixRain();
+
+// Mouse trail effect
+document.addEventListener('mousemove', function(e) {
+    const trail = document.createElement('div');
+    trail.className = 'mouse-trail';
+    trail.style.cssText = `
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: radial-gradient(circle, rgba(103, 80, 164, 0.8), transparent);
+        border-radius: 50%;
+        pointer-events: none;
+        left: ${e.clientX - 5}px;
+        top: ${e.clientY - 5}px;
+        z-index: 9999;
+        animation: trailFade 1s ease-out forwards;
+    `;
+    document.body.appendChild(trail);
+    
+    setTimeout(() => trail.remove(), 1000);
+});
+
+const trailStyle = document.createElement('style');
+trailStyle.textContent = `
+    @keyframes trailFade {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0);
+        }
+    }
+`;
+document.head.appendChild(trailStyle);
+
+console.log('🌟 ASTRAL\'s Portfolio loaded successfully! 🚀');
+console.log('🎮 Navigation: Use number keys 1-4 or click the buttons');
+console.log('✨ Features: Particle system, glitch effects, and matrix rain activated!');
+console.log('♿ Accessibility: Full keyboard navigation enabled');
